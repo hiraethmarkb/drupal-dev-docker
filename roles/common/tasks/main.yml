@@ -1,0 +1,20 @@
+---
+# This playbook contains common plays that will be run on all nodes.
+
+# 
+- name: Create source directory
+  file: path={{ project_source }} state=directory
+
+# Uncomment checksum, if using Ansible 2.0 or later
+- name: Download Drupal 
+  get_url: url="http://ftp.drupal.org/files/projects/{{ drupal_tarball }}" dest="{{ project_source }}/{{ drupal_tarball }}" #checksum="md5:{{ drupal_checksum }}"
+
+# Extract to newly created directory in project root
+- name: Extract downloaded tarball
+  shell: tar --strip-components 1 -xvzf drupal-8.0.0-rc1.tar.gz
+  args:
+    chdir: "{{ project_source }}"
+
+# Delete tarball as no longer required
+- name: Delete downloaded tarball
+  file: path="{{ project_source }}/{{ drupal_tarball }}" state=absent
